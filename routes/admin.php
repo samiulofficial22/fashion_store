@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\CategoryController;
 
 Route::prefix('admin')->name('admin.')->group(function() {
 
@@ -15,6 +16,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
           Route::get('dashboard', [AdminAuthController::class, 'dashboard'])->name('dashboard');
 
         // Future: Products CRUD routes
-        // Route::resource('products', AdminProductController::class);
+        //product category routes
+         Route::resource('categories', CategoryController::class)->names('categories');
     });
 });
