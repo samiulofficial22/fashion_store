@@ -2,11 +2,12 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\frontend\HomeController;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () {
+//    return view('welcome');
+//});
 
 //Route::get('/dashboard', function () {
 //    return view('dashboard');
@@ -22,6 +23,7 @@ Route::get('/', function () {
 
 
 //new code starts here 
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
 require __DIR__.'/admin.php';
