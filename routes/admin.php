@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
 
 Route::prefix('admin')->name('admin.')->group(function() {
 
@@ -18,5 +19,8 @@ Route::prefix('admin')->name('admin.')->group(function() {
         // Future: Products CRUD routes
         //product category routes
          Route::resource('categories', CategoryController::class)->names('categories');
+         Route::resource('products', ProductController::class)->names('products');
+         Route::delete('product-image/{id}', [ProductController::class, 'deleteImage'])->name('product-image.delete');
+         Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
     });
 });
