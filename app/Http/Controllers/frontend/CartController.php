@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\TaxRateSetting;
 
 class CartController extends Controller
 {
@@ -48,7 +49,8 @@ class CartController extends Controller
     foreach($cart as $item){
         $subtotal += $item['price'] * $item['quantity'];
     }
-    $taxRate = 0.02; // 2%
+    $taxRateSetting = TaxRateSetting::first();
+    $taxRate = $taxRateSetting ? $taxRateSetting->tax_rate / 100 : 0.02; // convert % to decimal
     $tax = $subtotal * $taxRate;
     $grandTotal = $subtotal + $tax;
 
@@ -73,7 +75,8 @@ public function remove(Request $request, $id)
     foreach($cart as $item){
         $subtotal += $item['price'] * $item['quantity'];
     }
-    $taxRate = 0.02; // 2%
+    $taxRateSetting = TaxRateSetting::first();
+    $taxRate = $taxRateSetting ? $taxRateSetting->tax_rate / 100 : 0.02; // convert % to decimal
     $tax = $subtotal * $taxRate;
     $grandTotal = $subtotal + $tax;
 

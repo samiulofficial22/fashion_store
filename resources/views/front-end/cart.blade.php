@@ -46,14 +46,9 @@
     </table>
 
     <div class="mt-4 text-end">
-        @php
-            $taxRate = 0.02; // 2%
-            $tax = $subtotal * $taxRate;
-            $grandTotal = $subtotal + $tax;
-        @endphp
         <p>Subtotal: <strong id="subtotal">{{ number_format($subtotal, 2) }}</strong> ৳</p>
-        <p>Tax (2.0%): <strong id="tax">{{ number_format($tax, 2) }}</strong> ৳</p>
-        <h4>Grand Total: <span id="grandTotal">{{ number_format($grandTotal, 2) }}</span> ৳</h4>
+        <p>Tax (<span id="taxRateText">Loading...</span>%): <strong id="tax">0.00</strong> ৳</p>
+        <h4>Grand Total: <span id="grandTotal">{{ number_format($subtotal, 2) }}</span> ৳</h4>
         <a href="#" class="btn btn-primary mt-2">Proceed to Checkout</a>
     </div>
 
@@ -65,11 +60,26 @@
 
 @push('script')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     const cartTable = document.getElementById('cartTable');
-    const taxRate = 0.02; // 2%
+    let taxRate = 0.00;
 
-    // Increase / Decrease buttons
+    // 🧾 Fetch dynamic tax rate from DB
+    await fetch('/api/tax-rate')
+        .then(res => res.json())
+        .then(data => {
+            taxRate = parseFloat(data.tax_rate) || 0.00;
+            document.getElementById('taxRateText').textContent = taxRate.toFixed(2);
+            updateTotals();
+        })
+        .catch(err => {
+            console.error('Tax rate load error:', err);
+            taxRate = 2.00;
+            document.getElementById('taxRateText').textContent = taxRate.toFixed(2);
+            updateTotals();
+        });
+
+    // 🧮 Increase / Decrease quantity
     cartTable?.addEventListener('click', function (e) {
         const row = e.target.closest('tr');
         if (!row) return;
@@ -77,17 +87,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const quantityInput = row.querySelector('.quantity');
         let quantity = parseInt(quantityInput.value);
 
-        if (e.target.classList.contains('increase')) {
-            quantity++;
-        } else if (e.target.classList.contains('decrease') && quantity > 1) {
-            quantity--;
-        } else return;
+        if (e.target.classList.contains('increase')) quantity++;
+        else if (e.target.classList.contains('decrease') && quantity > 1) quantity--;
+        else return;
 
         quantityInput.value = quantity;
         updateCartQuantity(id, quantity, row);
     });
 
-    // Manual input change
+    // ✏️ Manual quantity input
     document.querySelectorAll('.quantity').forEach(input => {
         input.addEventListener('change', function () {
             const row = this.closest('tr');
@@ -99,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Delete button
+    // ❌ Delete item
     document.querySelectorAll('.deleteItem').forEach(button => {
         button.addEventListener('click', function () {
             const row = this.closest('tr');
@@ -118,11 +126,17 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if(data.success){
                     row.remove();
-                    updateTotals(data);
+                    updateTotals();
 
-                    // If cart empty
+                    // Update top cart count
+                    const cartCount = document.getElementById('cartCount');
+                    if(cartCount) cartCount.textContent = data.cartCount;
+
                     if(document.querySelectorAll('#cartTable tbody tr').length === 0){
                         document.querySelector('#cartTable').outerHTML = '<p class="alert alert-info">Your cart is empty!</p>';
+                        document.getElementById('subtotal').textContent = '0.00';
+                        document.getElementById('tax').textContent = '0.00';
+                        document.getElementById('grandTotal').textContent = '0.00';
                     }
                 }
             })
@@ -130,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Update quantity function
+    // 🔄 Update Quantity
     function updateCartQuantity(id, quantity, row){
         fetch(`/cart/update/${id}`, {
             method: 'POST',
@@ -146,19 +160,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 const price = parseFloat(row.querySelector('.price').textContent.replace(',', ''));
                 const total = price * quantity;
                 row.querySelector('.total').textContent = total.toFixed(2);
-                updateTotals(data);
+                updateTotals();
             }
         })
         .catch(err => console.error(err));
     }
 
-    // Update totals on page
-    function updateTotals(data){
-        document.getElementById('subtotal').textContent = data.subtotal;
-        document.getElementById('tax').textContent = data.tax;
-        document.getElementById('grandTotal').textContent = data.grandTotal;
-        // Update top menu cart count
-    document.getElementById('cartCount').textContent = data.cartCount;
+    // 📊 Update Totals
+    function updateTotals(){
+        let subtotal = 0;
+        document.querySelectorAll('.total').forEach(td => {
+            subtotal += parseFloat(td.textContent);
+        });
+
+        const tax = subtotal * (taxRate / 100);
+        const grandTotal = subtotal + tax;
+
+        document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+        document.getElementById('tax').textContent = tax.toFixed(2);
+        document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
     }
 });
 </script>
