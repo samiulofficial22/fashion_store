@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TaxRateSettingController;
+use App\Http\Controllers\Admin\OrderController;
 
 Route::prefix('admin')->name('admin.')->group(function() {
 
@@ -27,5 +28,13 @@ Route::prefix('admin')->name('admin.')->group(function() {
         // Tax Rate Setting routes
         Route::get('/tax-rate-setting', [TaxRateSettingController::class, 'index'])->name('taxrate.index');
         Route::post('/tax-rate-setting', [TaxRateSettingController::class, 'update'])->name('taxrate.update');
+        
+        // Order Management
+        Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::post('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+        Route::get('orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
+        
+        
     });
 });
