@@ -31,7 +31,7 @@ class CheckoutController extends Controller
         return view('front-end.checkout', compact('cart', 'subtotal', 'tax', 'total', 'taxRatePercent'));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $request->validate([
             'billing_name' => 'required|string|max:255',
@@ -57,17 +57,19 @@ class CheckoutController extends Controller
         $tax = ($subtotal * $taxRatePercent) / 100;
         $total = $subtotal + $tax;
 
+        $userId = Auth::check() ? Auth::id() : null;
+
         DB::beginTransaction();
         try {
             $order = Orders::create([
-                'user_id' => Auth::id(),
-                'billing_name' => $request->billing_name,
-                'billing_email' => $request->billing_email,
+                'user_id' => $userId,
+                'billing_name' => $userId ? Auth::user()->name : $request->billing_name,
+                'billing_email' => $userId ? Auth::user()->email : $request->billing_email,
                 'billing_phone' => $request->billing_phone,
                 'billing_address' => $request->billing_address,
 
-                'shipping_name' => $request->shipping_name ?? $request->billing_name,
-                'shipping_email' => $request->shipping_email ?? $request->billing_email,
+                'shipping_name' => $request->shipping_name ?? ($userId ? Auth::user()->name : $request->billing_name),
+                'shipping_email' => $request->shipping_email ?? ($userId ? Auth::user()->email : $request->billing_email),
                 'shipping_phone' => $request->shipping_phone ?? $request->billing_phone,
                 'shipping_address' => $request->shipping_address ?? $request->billing_address,
 
@@ -76,14 +78,13 @@ class CheckoutController extends Controller
                 'total' => $total,
             ]);
 
-            // create items and reduce stock
+            // create order items and reduce stock
             foreach ($cart as $productId => $item) {
                 $product = Product::find($productId);
                 if (!$product) {
                     throw new \Exception("Product ({$productId}) not found");
                 }
 
-                // optional: check stock
                 if ($product->stock < $item['quantity']) {
                     throw new \Exception("Not enough stock for product: {$product->name}");
                 }
@@ -97,22 +98,20 @@ class CheckoutController extends Controller
                     'total' => $item['price'] * $item['quantity'],
                 ]);
 
-                // reduce stock
                 $product->decrement('stock', $item['quantity']);
             }
 
             DB::commit();
 
-            // clear cart
             session()->forget('cart');
 
             return redirect()->route('checkout.success', $order->id);
         } catch (\Throwable $e) {
             DB::rollBack();
-            // log or handle error
             return redirect()->route('checkout.index')->with('error', 'Failed to place order: ' . $e->getMessage());
         }
     }
+
 
     public function success($id)
     {

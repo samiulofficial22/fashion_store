@@ -1,63 +1,58 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\frontend\HomeController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\CartController;
-use App\Models\TaxRateSetting;
 use App\Http\Controllers\Frontend\CheckoutController;
+use App\Http\Controllers\Frontend\OrderController;
+use App\Models\TaxRateSetting;
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
+/*
+|--------------------------------------------------------------------------
+| Frontend Routes
+|--------------------------------------------------------------------------
+*/
 
-//Route::get('/dashboard', function () {
-//    return view('dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
-
-//Route::middleware('auth')->group(function () {
-//    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-//});
-
-//require __DIR__.'/auth.php';
-
-
-//new code starts here 
+// Home page
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Product page
 Route::get('/product/{id}', [HomeController::class, 'show'])->name('product.show');
 
+// Cart routes
+Route::prefix('cart')->group(function () {
+    Route::post('/add/{id}', [CartController::class, 'add'])->name('cart.add');
+    Route::get('/', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/update/{id}', [CartController::class, 'update'])->name('cart.update');
+});
 
-Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+// Checkout routes (public for guest)
+Route::prefix('checkout')->group(function () {
+    Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/store', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/success/{id}', [CheckoutController::class, 'success'])->name('checkout.success');
+});
 
+// Order history (logged-in user only)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+});
 
-
-
-
-
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])->name('checkout.success');
-
-
-
-
-
-
-
-
-//tax rate api
+// Tax rate API
 Route::get('/api/tax-rate', function() {
     $tax = TaxRateSetting::first()?->tax_rate ?? 2.00;
     return response()->json(['tax_rate' => $tax]);
 });
 
+// Auth routes (Breeze)
+require __DIR__.'/auth.php';
 
+// Admin routes
 require __DIR__.'/admin.php';
-
-

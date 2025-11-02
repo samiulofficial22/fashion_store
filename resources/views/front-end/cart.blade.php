@@ -35,7 +35,8 @@
                             <button class="btn btn-outline-secondary btn-sm increase">+</button>
                         </div>
                     </td>
-                    <td class="price">{{ number_format($item['price'], 2) }}</td>
+                    <td class="price" data-price="{{ $item['price'] }}">{{ number_format($item['price'], 2) }}</td>
+
                     <td class="total">{{ number_format($total, 2) }}</td>
                     <td>
                         <button class="btn btn-danger btn-sm deleteItem"><i class="bi bi-trash"></i></button>
@@ -157,7 +158,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         .then(res => res.json())
         .then(data => {
             if(data.success){
-                const price = parseFloat(row.querySelector('.price').textContent.replace(',', ''));
+              
+                const price = parseFloat(row.querySelector('.price').dataset.price);
                 const total = price * quantity;
                 row.querySelector('.total').textContent = total.toFixed(2);
                 updateTotals();
@@ -169,8 +171,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     // 📊 Update Totals
     function updateTotals(){
         let subtotal = 0;
-        document.querySelectorAll('.total').forEach(td => {
-            subtotal += parseFloat(td.textContent);
+        document.querySelectorAll('#cartTable tbody tr').forEach(row => {
+            const price = parseFloat(row.querySelector('.price').dataset.price);
+            const quantity = parseInt(row.querySelector('.quantity').value);
+            subtotal += price * quantity;
         });
 
         const tax = subtotal * (taxRate / 100);
@@ -180,6 +184,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('tax').textContent = tax.toFixed(2);
         document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
     }
+
 });
 </script>
 @endpush
