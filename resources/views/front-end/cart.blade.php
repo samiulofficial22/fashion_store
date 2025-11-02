@@ -49,7 +49,7 @@
         <p>Subtotal: <strong id="subtotal">{{ number_format($subtotal, 2) }}</strong> ৳</p>
         <p>Tax (<span id="taxRateText">Loading...</span>%): <strong id="tax">0.00</strong> ৳</p>
         <h4>Grand Total: <span id="grandTotal">{{ number_format($subtotal, 2) }}</span> ৳</h4>
-        <a href="#" class="btn btn-primary mt-2">Proceed to Checkout</a>
+        <a href="{{ route('checkout.index') }}" class="btn btn-primary mt-2">Proceed to Checkout</a>
     </div>
 
     @else
