@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TaxRateSettingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NotificationController;
 
 Route::prefix('admin')->name('admin.')->group(function() {
 
@@ -36,6 +37,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
         Route::post('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
         Route::get('orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
         
+        Route::get('notifications/orders', [NotificationController::class, 'getNewOrders'])->name('notifications.orders');
         
     });
 });

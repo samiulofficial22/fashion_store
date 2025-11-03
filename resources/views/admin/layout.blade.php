@@ -100,6 +100,27 @@
     @stack('style')
 </head>
 <body>
+        <!-- Topbar -->
+    <nav class="navbar navbar-expand navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Admin Dashboard</a>
+
+            <ul class="navbar-nav ms-auto">
+                <!-- Notification Bell -->
+                <li class="nav-item dropdown mt-3">
+                    <a class="nav-link position-relative bg-dark text-white" href="#" id="orderBell" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="orderCount">
+                            0
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="orderBell" id="orderList">
+                        <li><p class="dropdown-item">No new orders</p></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
     {{-- Mobile overlay --}}
     <div class="sidebar-overlay"></div>
 
@@ -156,7 +177,49 @@
             sidebar.classList.remove('show');
             overlay.classList.remove('show');
         });
+    </script> 
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function fetchNewOrders() {
+            fetch("{{ route('admin.notifications.orders') }}")
+                .then(res => res.json())
+                .then(data => {
+                    const orderCount = document.getElementById('orderCount');
+                    const orderList = document.getElementById('orderList');
+
+                    orderCount.textContent = data.count;
+
+                    // List update
+                    orderList.innerHTML = '';
+                    if (data.count > 0) {
+                        data.orders.forEach(order => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<a class="dropdown-item" href="/admin/orders/${order.id}">
+                                🧾 Order #${order.id} - ${order.name} (${order.total}৳)
+                            </a>`;
+                            orderList.appendChild(li);
+                        });
+
+                        // 🔔 Optional sound effect
+                        playNotificationSound();
+                    } else {
+                        orderList.innerHTML = '<li><p class="dropdown-item">No new orders</p></li>';
+                    }
+                });
+        }
+
+        //uncomment to enable sound notification
+        //function playNotificationSound() {
+        //    const audio = new Audio("{{ asset('sounds/notify.wav') }}");
+        //    audio.play();
+        //}
+
+        // প্রতি 10 সেকেন্ডে refresh হবে
+        setInterval(fetchNewOrders, 10000);
+        fetchNewOrders();
+    });
     </script>
+
     @stack('script')
 </body>
 </html>
