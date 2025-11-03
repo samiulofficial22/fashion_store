@@ -21,18 +21,18 @@
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-white">Products</h6>
-                        <h3 class="text-white">120</h3>
+                        <h3 class="text-white">{{ $totalProducts }}</h3>
                     </div>
                     <i class="bi bi-box fs-2 text-white"></i>
                 </div>
             </div>
-        </div>
+        </div> 
         <div class="col-6 col-md-3">
             <div class="card text-bg-success shadow-sm border-0">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-white">Orders</h6>
-                        <h3 class="text-white">75</h3>
+                        <h6 class="text-white">Total Orders</h6>
+                        <h3 class="text-white">{{ $totalOrders }}</h3>
                     </div>
                     <i class="bi bi-bag fs-2 text-white"></i>
                 </div>
@@ -43,7 +43,7 @@
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-white">Users</h6>
-                        <h3 class="text-white">350</h3>
+                        <h3 class="text-white">{{ $totalUser }}</h3>
                     </div>
                     <i class="bi bi-people fs-2 text-white"></i>
                 </div>
@@ -60,7 +60,100 @@
                 </div>
             </div>
         </div>
+        
     </div>
+    {{-- Summary Widgets --}}
+    <div>
+        <h4 class="mb-4">Order Summary</h4>
+    </div>
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm border-0">
+                <div class="card-body">
+                    <h4 class="text-primary">Total Orders</h4>
+                    <h2>{{ $totalOrders }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm border-0">
+                <div class="card-body">
+                    <h4 class="text-warning">Pending</h4>
+                    <h2>{{ $pending }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm border-0">
+                <div class="card-body">
+                    <h4 class="text-info">Processing</h4>
+                    <h2>{{ $processing }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm border-0">
+                <div class="card-body">
+                    <h4 class="text-success">Completed</h4>
+                    <h2>{{ $completed }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+        {{-- Recent Orders Table --}}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">🕒 Recent Orders</h5>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped text-center mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($recentOrders as $order)
+                        <tr>
+                            <td>{{ $order->id }}</td>
+                            <td>{{ $order->user_id ? $order->user->name : $order->billing_name }}</td>
+                            <td>${{ number_format($order->total, 2) }}</td>
+                            <td>
+                                <span class="badge 
+                                    @if($order->status=='pending') bg-warning
+                                    @elseif($order->status=='processing') bg-info
+                                    @elseif($order->status=='completed') bg-success
+                                    @else bg-danger @endif">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </td>
+                            <td>{{ $order->created_at->format('d M, Y') }}</td>
+                            <td>
+                                <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">Details</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-3">No recent orders found.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    
+    
 
     {{-- Latest Products Table --}}
     <div class="card shadow-sm mb-4">

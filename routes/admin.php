@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TaxRateSettingController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::prefix('admin')->name('admin.')->group(function() {
 
@@ -16,7 +17,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
     // Authenticated routes
     Route::middleware('auth:admin')->group(function () {
-        Route::get('dashboard', [AdminAuthController::class, 'dashboard'])->name('dashboard');
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Future: Products CRUD routes
         // product category routes
