@@ -14,19 +14,20 @@
                 <thead class="table-dark">
                     <tr>
                         <th>Order ID</th>
-                        <th>Total</th>
-                        <th>Status</th>
                         <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th> 
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($orders as $order)
                         <tr>
-                            <td>#{{ $order->id }}</td>
+                            <td>{{ ++$loop->index }}</td>
+                            <td>{{ $order->created_at->format('d M, Y') }}</td>
                             <td>${{ number_format($order->total, 2) }}</td>
                             <td>{{ ucfirst($order->status) }}</td>
-                            <td>{{ $order->created_at->format('d M, Y') }}</td>
+                          
                             <td>
                                 <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-primary">View Details</a>
                             </td>
