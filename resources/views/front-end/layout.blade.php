@@ -50,9 +50,7 @@
         <div class="collapse navbar-collapse" id="topMenu">
             <ul class="navbar-nav ms-auto">
                 <!-- Header Login Button -->
-                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
-                    <i class="fa fa-user"></i> Login
-                </button>
+               
                 <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
 				<li class="nav-item">
@@ -76,7 +74,11 @@
                     </li>
                 @else
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">Login</a>
+                        {{--<a class="nav-link" href="{{ route('login') }}">Login</a>
+                         <button class="btn btn-outline-primary">
+                            <i class="fa fa-user"></i> Login
+                        </button>--}}
+                        <a href="" class="nav-link" data-bs-toggle="modal" data-bs-target="#loginModal">login</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('register') }}">Register</a>
@@ -173,9 +175,8 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    // Optional: SweetAlert2 বা toastr ব্যবহার করতে পারো
                     alert(result.message);
-                    location.reload();
+                    window.location.href = result.redirect; // ✅ login হলে dashboard এ নিয়ে যাবে
                 } else {
                     alert(result.message || 'Login failed. Try again.');
                 }

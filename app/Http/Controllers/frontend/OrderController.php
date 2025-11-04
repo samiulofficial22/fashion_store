@@ -11,18 +11,19 @@ class OrderController extends Controller
     // Dashboard page
     public function dashboard()
     {
-        $orders = Orders::where('user_id', Auth::id())
+        $user = Auth::user();
+        $orders = Orders::where('user_id', $user->id)
                         ->with('items')
                         ->latest()
                         ->get();
 
-        return view('front-end.dashboard', compact('orders'));
+        return view('front-end.dashboard', compact('orders', 'user'));
     }
 
     // All orders list for logged-in user 
     public function index()
     {
-        return $this->dashboard(); // same as dashboard
+       return redirect()->route('home'); // same as dashboard
     }
 
     public function show(Orders $order)

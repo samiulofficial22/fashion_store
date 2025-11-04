@@ -10,11 +10,17 @@ use Illuminate\Support\Facades\Hash;
 
 class QuickLoginController extends Controller
 {
-    public function showForm()
+    /**
+     * Show quick login modal or page
+     */
+    public function showLoginForm()
     {
-        return view('frontend.auth.quick-login');
+        return view('front-end.auth.quick-login'); // ✅ path ঠিক করা হয়েছে
     }
 
+    /**
+     * Handle quick login or register
+     */
     public function submit(Request $request)
     {
         $request->validate([
@@ -27,25 +33,39 @@ class QuickLoginController extends Controller
         // Check user by email or phone
         $user = User::where($isEmail ? 'email' : 'phone', $input)->first();
 
+        // ✅ যদি ইউজার থাকে তাহলে সরাসরি লগইন
         if ($user) {
             Auth::login($user);
-            return response()->json(['success' => true, 'message' => 'Welcome back!']);
+
+            return response()->json([
+                'success'  => true,
+                'redirect' => route('dashboard'), // ✅ Redirect to dashboard
+                'message'  => 'Welcome back, ' . ($user->name ?? 'User') . '!',
+            ]);
         }
 
-        // Create new user
+        // ✅ না থাকলে নতুন ইউজার তৈরি করা হবে
         $user = User::create([
-            'email' => $isEmail ? $input : null,
-            'phone' => !$isEmail ? $input : null,
-            'password' => Hash::make('123456'),
+            'email'    => $isEmail ? $input : null,
+            'phone'    => !$isEmail ? $input : null,
+            'password' => Hash::make('123456'), // default password
         ]);
 
         Auth::login($user);
-        return response()->json(['success' => true, 'message' => 'Account created successfully!']);
+
+        return response()->json([
+            'success'  => true,
+            'redirect' => route('dashboard'), // ✅ সফল হলে dashboard এ redirect
+            'message'  => 'Account created successfully! Welcome, ' . ($user->name ?? 'User') . '!',
+        ]);
     }
 
+    /**
+     * Logout
+     */
     public function logout()
     {
         Auth::logout();
-        return redirect('/')->with('success', 'Logged out successfully!');
+        return redirect()->route('home')->with('success', 'Logged out successfully!');
     }
 }

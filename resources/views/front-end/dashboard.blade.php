@@ -1,8 +1,29 @@
-@extends('front-end.layout')
+{{--@extends('front-end.layout')
 
 @section('title', 'Dashboard')
 
 @section('content')
+
+@endsection--}}
+@extends('front-end.layout')
+
+@section('title', 'My Dashboard')
+
+@section('content')
+<div class="container py-5">
+    <h3>Welcome, {{ $user->name ?? 'User' }} 👋</h3>
+
+    <div class="card mt-4">
+        <div class="card-header">Profile Summary</div>
+        <div class="card-body">
+            <p><strong>Email:</strong> {{ $user->email ?? 'N/A' }}</p>
+            <p><strong>Phone:</strong> {{ $user->phone ?? 'N/A' }}</p>
+            <p><strong>Address:</strong> {{ $user->address ?? 'Not set' }}</p>
+            <a href="{{ route('profile.edit') }}" class="btn btn-primary mt-2">Edit Profile</a>
+        </div>
+    </div>
+</div>
+
 <div class="container my-5">
     <h2 class="mb-4">Welcome, {{ Auth::user()->name }}!</h2>
 
@@ -39,3 +60,4 @@
     @endif
 </div>
 @endsection
+

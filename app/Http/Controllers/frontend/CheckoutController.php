@@ -57,25 +57,28 @@ class CheckoutController extends Controller
         $tax = ($subtotal * $taxRatePercent) / 100;
         $total = $subtotal + $tax;
 
-        $userId = Auth::check() ? Auth::id() : null;
+        $user = Auth::user();
+        $userId = $user?->id;
 
         DB::beginTransaction();
         try {
             $order = Orders::create([
                 'user_id' => $userId,
-                'billing_name' => $userId ? Auth::user()->name : $request->billing_name,
-                'billing_email' => $userId ? Auth::user()->email : $request->billing_email,
-                'billing_phone' => $request->billing_phone,
+                
+               // ✅ Fallback if Auth user data missing
+                'billing_name'    => $user?->name ?: $request->billing_name,
+                'billing_email'   => $user?->email ?: $request->billing_email,
+                'billing_phone'   => $request->billing_phone,
                 'billing_address' => $request->billing_address,
 
-                'shipping_name' => $request->shipping_name ?? ($userId ? Auth::user()->name : $request->billing_name),
-                'shipping_email' => $request->shipping_email ?? ($userId ? Auth::user()->email : $request->billing_email),
-                'shipping_phone' => $request->shipping_phone ?? $request->billing_phone,
-                'shipping_address' => $request->shipping_address ?? $request->billing_address,
+                'shipping_name'    => $request->shipping_name ?: ($user?->name ?: $request->billing_name),
+                'shipping_email'   => $request->shipping_email ?: ($user?->email ?: $request->billing_email),
+                'shipping_phone'   => $request->shipping_phone ?: $request->billing_phone,
+                'shipping_address' => $request->shipping_address ?: $request->billing_address,
 
                 'subtotal' => $subtotal,
-                'tax' => $tax,
-                'total' => $total,
+                'tax'      => $tax,
+                'total'    => $total,
             ]);
 
             // create order items and reduce stock
