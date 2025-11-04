@@ -49,6 +49,10 @@
         </button>
         <div class="collapse navbar-collapse" id="topMenu">
             <ul class="navbar-nav ms-auto">
+                <!-- Header Login Button -->
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    <i class="fa fa-user"></i> Login
+                </button>
                 <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
 				<li class="nav-item">
@@ -102,7 +106,87 @@
     </div>
 </footer>
 
+
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginModalLabel">Login or Register</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="quickLoginForm" method="POST" action="{{ route('quick.login.post') }}">
+          @csrf
+          <div class="mb-3">
+            <label class="form-label">Enter Phone or Email</label>
+            <input type="text" name="login" class="form-control" placeholder="017XXXXXXXX or example@mail.com" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Continue</button>
+        </form>
+
+        <div class="text-center my-3">
+          <p class="mb-2">or</p>
+          <a href="{{ route('google.login') }}" class="btn btn-danger w-100">
+            <i class="fab fa-google me-2"></i> Continue with Google
+          </a>
+        </div>
+
+        <div class="text-center">
+          <a href="{{ route('quick.login') }}">Go to full login page →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Login Modal -->
+
+
+
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 @stack('script')
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('quickLoginForm');
+        if (!form) return;
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const data = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: data
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Optional: SweetAlert2 বা toastr ব্যবহার করতে পারো
+                    alert(result.message);
+                    location.reload();
+                } else {
+                    alert(result.message || 'Login failed. Try again.');
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert('Something went wrong.');
+            }
+        });
+    });
+    </script>
+
 </body>
 </html>
