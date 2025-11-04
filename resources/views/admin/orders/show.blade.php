@@ -3,8 +3,11 @@
 @section('title', 'Order Details')
 
 @section('content')
-<div class="container my-5">
-    <h2 class="mb-4">Order #{{ $order->id }}</h2>
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-4">Order #{{ $order->id }}</h2>
+        <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
 
     <div class="card mb-4">
         <div class="card-header bg-dark text-white">Customer Info</div>
@@ -71,7 +74,7 @@
 
     <div class="text-end">
         <a href="{{ route('admin.orders.invoice', $order->id) }}" target="_blank" class="btn btn-success">View Invoice</a>
-        <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">Back</a>
+        
     </div>
 </div>
 @endsection

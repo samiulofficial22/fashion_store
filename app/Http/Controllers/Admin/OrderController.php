@@ -9,9 +9,29 @@ use App\Models\Orders;
 class OrderController extends Controller
 {
     // List all orders
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Orders::with('items')->latest()->get();
+        $query = Orders::query()->with('user');
+
+        // Search by name or ID
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('billing_name', 'like', "%{$search}%")
+                ->orWhere('id', $search)
+                ->orWhereHas('user', function ($u) use ($search) {
+                    $u->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Filter by Status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $orders = $query->latest()->get();
+
         return view('admin.orders.index', compact('orders'));
     }
 
