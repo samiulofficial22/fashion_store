@@ -1,10 +1,4 @@
-{{--@extends('front-end.layout')
 
-@section('title', 'Dashboard')
-
-@section('content')
-
-@endsection--}}
 @extends('front-end.layout')
 
 @section('title', 'My Dashboard')

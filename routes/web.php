@@ -2,13 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\frontend\ProfileController;
-use App\Http\Controllers\Frontend\HomeController;
-use App\Http\Controllers\Frontend\CartController;
-use App\Http\Controllers\Frontend\CheckoutController;
-use App\Http\Controllers\Frontend\OrderController;
+use App\Http\Controllers\frontend\HomeController;
+use App\Http\Controllers\frontend\CartController;
+use App\Http\Controllers\frontend\CheckoutController;
+use App\Http\Controllers\frontend\OrderController;
 use App\Http\Controllers\Auth\QuickLoginController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Models\TaxRateSetting;
+use App\Http\Controllers\frontend\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +60,10 @@ Route::get('/api/tax-rate', function() {
 Route::get('/login-modal', [QuickLoginController::class, 'showLoginForm'])->name('quick.login');
 Route::post('/quick-login', [QuickLoginController::class, 'submit'])->name('quick.login.post');
 
+//register route 
+Route::get('/register', [RegisterController::class, 'showForm'])->name('register.form');
+Route::post('/register', [RegisterController::class, 'submit'])->name('register.submit');
+
 /*
 |--------------------------------------------------------------------------
 | Google Login Routes
@@ -81,4 +86,4 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Admin routes
-require __DIR__.'/admin.php';
+//require __DIR__.'/admin.php';
