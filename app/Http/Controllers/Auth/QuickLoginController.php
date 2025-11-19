@@ -15,7 +15,7 @@ class QuickLoginController extends Controller
      */
     public function showLoginForm()
     {
-        return view('front-end.auth.quick-login'); // ✅ path ঠিক করা হয়েছে
+        return view('front-end.profile.quick-login'); // ✅ path ঠিক করা হয়েছে
     }
 
     /**

@@ -152,42 +152,51 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 @stack('script')
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('quickLoginForm');
-        if (!form) return;
+   {{-- ✅ JS Section --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('quickLoginForm');
+    if (!form) return;
 
-        form.addEventListener('submit', async function (e) {
-            e.preventDefault();
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-            const data = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerText;
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Processing...';
 
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    },
-                    body: data
-                });
+        const data = new FormData(form);
 
-                const result = await response.json();
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: data
+            });
 
-                if (result.success) {
-                    alert(result.message);
-                    window.location.href = result.redirect; // ✅ login হলে dashboard এ নিয়ে যাবে
-                } else {
-                    alert(result.message || 'Login failed. Try again.');
-                }
+            const result = await response.json();
 
-            } catch (error) {
-                console.error(error);
-                alert('Something went wrong.');
+            if (result.success && result.redirect) {
+                // ✅ Direct redirect without alert
+                window.location.href = result.redirect;
+            } else {
+                alert(result.message || 'Login failed. Try again.');
             }
-        });
+
+        } catch (error) {
+            console.error(error);
+            alert('Something went wrong. Please try again.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalText;
+        }
     });
-    </script>
+});
+</script>
 
 </body>
 </html>

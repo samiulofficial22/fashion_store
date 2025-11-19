@@ -1,30 +1,56 @@
-@extends('layouts.frontend')
-@section('title', 'My Profile')
+@extends('front-end.layout')
+
+@section('title', 'Edit Profile')
 
 @section('content')
-<div class="container my-5">
-    <h2>👤 My Profile</h2>
+<div class="container py-5">
+    <h3 class="mb-4">👤 Edit Profile</h3>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
     <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="mb-3">
-            <label>Profile Image</label><br>
-            <img src="{{ auth()->user()->avatar ? asset(auth()->user()->avatar) : 'https://ui-avatars.com/api/?name=' . auth()->user()->name }}" width="100" class="rounded-circle mb-2">
-            <input type="file" name="avatar" class="form-control">
+        @method('PATCH')
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="name" value="{{ old('name', $user->name) }}" class="form-control" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" value="{{ old('email', $user->email) }}" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Phone Number</label>
+                <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Address</label>
+                <input type="text" name="address" value="{{ old('address', $user->address) }}" class="form-control">
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label class="form-label">Profile Photo</label>
+                <div class="d-flex align-items-center gap-3">
+                    @if($user->avatar)
+                        <img src="{{ asset($user->avatar) }}" alt="Avatar" width="80" class="rounded-circle border">
+                    @else
+                        <img src="{{ asset('images/default-avatar.png') }}" alt="Avatar" width="80" class="rounded-circle border">
+                    @endif
+                    <input type="file" name="avatar" accept="image/*" class="form-control w-auto">
+                </div>
+            </div>
+
+            <div class="col-12">
+                <button class="btn btn-primary px-4">💾 Update Profile</button>
+            </div>
         </div>
-        <div class="mb-3">
-            <label>Name</label>
-            <input type="text" name="name" value="{{ auth()->user()->name }}" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label>Phone</label>
-            <input type="text" name="phone" value="{{ auth()->user()->phone }}" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label>Address</label>
-            <textarea name="address" class="form-control" rows="2">{{ auth()->user()->address }}</textarea>
-        </div>
-        <button type="submit" class="btn btn-success w-100">Update Profile</button>
     </form>
 </div>
 @endsection
