@@ -57,22 +57,49 @@ class CheckoutController extends Controller
         $tax = ($subtotal * $taxRatePercent) / 100;
         $total = $subtotal + $tax;
 
-        $user = Auth::user();
-        $userId = $user?->id;
+        // ===============================
+        // 🔥 Auto create user if not logged in
+        // ===============================
+        if (!Auth::check()) {
+            // check if email already exists
+            $existingUser = \App\Models\User::where('email', $request->billing_email)->first();
+
+            if ($existingUser) {
+                Auth::login($existingUser);
+                $user = $existingUser;
+
+            } else {
+                // create new user
+                $user = \App\Models\User::create([
+                    'name' => $request->billing_name,
+                    'email' => $request->billing_email,
+                    'phone' => $request->billing_phone,
+                    'password' => bcrypt('password123'),  // auto password
+                ]);
+
+                Auth::login($user); // auto login
+            }
+
+        } else {
+            $user = Auth::user();
+        }
+
+        $userId = $user->id;
+        // ===============================
+
 
         DB::beginTransaction();
         try {
             $order = Orders::create([
                 'user_id' => $userId,
-                
-               // ✅ Fallback if Auth user data missing
-                'billing_name'    => $user?->name ?: $request->billing_name,
-                'billing_email'   => $user?->email ?: $request->billing_email,
+
+                'billing_name'    => $request->billing_name,
+                'billing_email'   => $request->billing_email,
                 'billing_phone'   => $request->billing_phone,
                 'billing_address' => $request->billing_address,
 
-                'shipping_name'    => $request->shipping_name ?: ($user?->name ?: $request->billing_name),
-                'shipping_email'   => $request->shipping_email ?: ($user?->email ?: $request->billing_email),
+                'shipping_name'    => $request->shipping_name ?: $request->billing_name,
+                'shipping_email'   => $request->shipping_email ?: $request->billing_email,
                 'shipping_phone'   => $request->shipping_phone ?: $request->billing_phone,
                 'shipping_address' => $request->shipping_address ?: $request->billing_address,
 
@@ -81,9 +108,9 @@ class CheckoutController extends Controller
                 'total'    => $total,
             ]);
 
-            // create order items and reduce stock
             foreach ($cart as $productId => $item) {
                 $product = Product::find($productId);
+
                 if (!$product) {
                     throw new \Exception("Product ({$productId}) not found");
                 }
@@ -109,11 +136,13 @@ class CheckoutController extends Controller
             session()->forget('cart');
 
             return redirect()->route('checkout.success', $order->id);
+
         } catch (\Throwable $e) {
             DB::rollBack();
             return redirect()->route('checkout.index')->with('error', 'Failed to place order: ' . $e->getMessage());
         }
     }
+
 
 
     public function success($id)
