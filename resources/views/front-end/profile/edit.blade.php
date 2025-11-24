@@ -34,6 +34,16 @@
                 <label class="form-label">Address</label>
                 <input type="text" name="address" value="{{ old('address', $user->address) }}" class="form-control">
             </div>
+            
+           <div class="col-md-6 mb-3">
+                <label class="form-label">New Password</label>
+                <input type="password" name="password" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="password_confirmation" class="form-control">
+            </div>
 
             <div class="col-md-12 mb-3">
                 <label class="form-label">Profile Photo</label>

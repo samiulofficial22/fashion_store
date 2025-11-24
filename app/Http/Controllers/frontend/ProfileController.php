@@ -20,16 +20,19 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // ✅ Validation
+        // Validation
         $request->validate([
             'name'    => 'required|string|max:255',
             'email'   => ['nullable','email','max:255', Rule::unique('users')->ignore($user->id)],
             'phone'   => ['nullable','string','max:20', Rule::unique('users')->ignore($user->id)],
             'address' => 'nullable|string|max:1000',
             'avatar'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+
+            // For password
+            'password' => 'nullable|min:6|confirmed',
         ]);
 
-        // ✅ Handle avatar upload
+        // Avatar upload
         if ($request->hasFile('avatar')) {
             if ($user->avatar && Storage::exists(str_replace('storage/', 'public/', $user->avatar))) {
                 Storage::delete(str_replace('storage/', 'public/', $user->avatar));
@@ -39,15 +42,22 @@ class ProfileController extends Controller
             $user->avatar = 'storage/' . $path;
         }
 
-        // ✅ Update fields
+        // Update basic fields
         $user->name    = $request->name;
         $user->email   = $request->email;
         $user->phone   = $request->phone;
         $user->address = $request->address;
+
+        // NEW ➤ Update password only if user enters new one
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
+        }
+
         $user->save();
 
         return back()->with('success', '✅ Profile updated successfully!');
     }
+
     
     public function destroy()
     {
