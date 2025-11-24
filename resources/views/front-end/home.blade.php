@@ -1,6 +1,6 @@
 @extends('front-end.layout')
 
-@section('title', 'Home')
+@section('title', 'Home organic')
 
 @section('content')
 
