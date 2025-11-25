@@ -140,7 +140,10 @@
         <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
             <i class="bi bi-bag"></i><span class="link-text">Orders</span>
         </a>
-        <a href="#"><i class="bi bi-people"></i> Users</a>
+        <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+            <i class="bi bi-people"></i> 
+            <span class="link-text">Users</span>
+        </a>
         <a href="#"><i class="bi bi-gear"></i> Settings</a>
         <a href="{{ route('admin.taxrate.index') }}" class="{{ request()->routeIs('admin.taxrate.*') ? 'active' : '' }}">
             <i class="bi bi-percent"></i><span class="link-text">Tax Rate Setting</span>

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\TaxRateSettingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::prefix('admin')->name('admin.')->group(function() {
 
@@ -19,6 +20,10 @@ Route::prefix('admin')->name('admin.')->group(function() {
     // Authenticated routes
     Route::middleware('auth:admin')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+        // Users list
+        Route::resource('users', UserController::class)->names('users');
+        Route::get('users/{user}/export-pdf', [UserController::class, 'exportPdf'])->name('admin.users.export.pdf');
 
         // Future: Products CRUD routes
         // product category routes
