@@ -84,6 +84,11 @@ Route::middleware(['auth'])->group(function () {
      Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+//logout route
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/');
+})->name('logout');
 
 // Admin routes
 require __DIR__.'/admin.php';
