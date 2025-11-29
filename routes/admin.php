@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\SettingController;
 
 Route::prefix('admin')->name('admin.')->group(function() {
 
@@ -43,6 +44,13 @@ Route::prefix('admin')->name('admin.')->group(function() {
         Route::get('orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
         
         Route::get('notifications/orders', [NotificationController::class, 'getNewOrders'])->name('notifications.orders');
+         
+        // Admin Settings
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings/update', [SettingController::class, 'update'])->name('settings.update');
+
+        
+        
         
     });
 });

@@ -52,7 +52,9 @@
 <!-- Top Menu -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('home') }}">MyStore</a>
+        <a class="navbar-brand" href="{{ route('home') }}">
+           <img src="{{ asset(setting('logo')) }}" alt="Logo" style="height: 40px; width: auto;"> {{ setting('site_name') }}
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topMenu">
             <span class="navbar-toggler-icon"></span>
         </button>

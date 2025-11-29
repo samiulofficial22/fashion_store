@@ -144,10 +144,12 @@
             <i class="bi bi-people"></i> 
             <span class="link-text">Users</span>
         </a>
-        <a href="#"><i class="bi bi-gear"></i> Settings</a>
+        <a href="{{ route('admin.settings.index') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+            <i class="bi bi-gear"></i><span class="link-text">Settings</span>
+        </a>
         <a href="{{ route('admin.taxrate.index') }}" class="{{ request()->routeIs('admin.taxrate.*') ? 'active' : '' }}">
             <i class="bi bi-percent"></i><span class="link-text">Tax Rate Setting</span>
-        </a>
+        </a> 
 
         <form method="POST" action="{{ route('admin.logout') }}" class="mt-auto">
             @csrf

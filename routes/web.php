@@ -73,7 +73,7 @@ Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.
 Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
 
 // Auth routes (Breeze)
-require __DIR__.'/auth.php';
+//require __DIR__.'/auth.php';
 
 // ==========================
 // 🌐 Override Breeze profile routes with Frontend profile
