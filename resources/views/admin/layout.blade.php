@@ -145,7 +145,10 @@
             <span class="link-text">Users</span>
         </a>
         <a href="{{ route('admin.settings.index') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
-            <i class="bi bi-gear"></i><span class="link-text">Settings</span>
+            <i class="bi bi-gear"></i><span class="link-text">Website Settings</span>
+        </a>
+        <a href="{{ route('admin.hometopslider.index') }}" class="{{ request()->routeIs('admin.hometopslider.*') ? 'active' : '' }}">
+            <i class="bi bi-images"></i><span class="link-text">Home Top Sliders</span>
         </a>
         <a href="{{ route('admin.taxrate.index') }}" class="{{ request()->routeIs('admin.taxrate.*') ? 'active' : '' }}">
             <i class="bi bi-percent"></i><span class="link-text">Tax Rate Setting</span>
