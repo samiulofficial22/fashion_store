@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\HomeTopSliderController;
 
 Route::prefix('admin')->name('admin.')->group(function() {
 
@@ -49,6 +50,10 @@ Route::prefix('admin')->name('admin.')->group(function() {
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings/update', [SettingController::class, 'update'])->name('settings.update');
 
+        // home page top slider routes
+        Route::resource('hometopslider', HomeTopSliderController::class); 
+        Route::get('hometopslider/restore/{id}', [HomeTopSliderController::class, 'restore'])->name('hometopslider.restore');
+        Route::delete('hometopslider/force-delete/{id}', [HomeTopSliderController::class, 'forceDelete'])->name('hometopslider.forceDelete');
         
         
         
