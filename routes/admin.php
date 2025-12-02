@@ -52,9 +52,14 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
         // home page top slider routes
         Route::resource('hometopslider', HomeTopSliderController::class); 
-        Route::get('hometopslider/restore/{id}', [HomeTopSliderController::class, 'restore'])->name('hometopslider.restore');
-        Route::delete('hometopslider/force-delete/{id}', [HomeTopSliderController::class, 'forceDelete'])->name('hometopslider.forceDelete');
-        
+        Route::get('hometopslider-trash', [HomeTopSliderController::class, 'trash'])
+        ->name('hometopslider.trash');
+
+        Route::get('hometopslider/restore/{id}', [HomeTopSliderController::class, 'restore'])
+        ->name('hometopslider.restore');
+
+        Route::delete('hometopslider/force-delete/{id}', [HomeTopSliderController::class, 'forceDelete'])
+        ->name('hometopslider.forceDelete');
         
         
     });

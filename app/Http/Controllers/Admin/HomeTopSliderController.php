@@ -15,8 +15,10 @@ class HomeTopSliderController extends Controller
      */
     public function index()
     {
-        $sliders = HomeTopSlider::orderBy('ordering')->get();
-        return view('admin.hometopslider.index', compact('sliders'));
+        $sliders = HomeTopSlider::orderBy('ordering', 'asc')->paginate(20);
+        $trashed = HomeTopSlider::onlyTrashed()->count();
+
+        return view('admin.hometopslider.index', compact('sliders', 'trashed'));
     }
 
     /**
@@ -118,20 +120,37 @@ class HomeTopSliderController extends Controller
      * Remove the specified resource from storage.
      */
     
-    public function restore($id)
-    {
-        HomeTopSlider::withTrashed()->find($id)->restore();
-        return back()->with('success', 'Slider restored!');
-    }
-    
-    public function forceDelete($id)
-    {
-        HomeTopSlider::withTrashed()->find($id)->forceDelete();
-        return back()->with('success', 'Slider permanently deleted!');
-    }
-
     public function destroy(HomeTopSlider $hometopslider)
     {
-        //
+        $hometopslider->delete();
+        return back()->with('success', 'Slider moved to trash!');
     }
+
+    public function trash()
+    {
+        $sliders = HomeTopSlider::onlyTrashed()->paginate(20);
+        return view('admin.hometopslider.trash', compact('sliders'));
+    }
+
+    public function restore($id)
+    {
+        $slider = HomeTopSlider::withTrashed()->findOrFail($id);
+        $slider->restore();
+
+        return back()->with('success', 'Slider restored!');
+    }
+
+    public function forceDelete($id)
+    {
+        $slider = HomeTopSlider::withTrashed()->findOrFail($id);
+
+        // Delete image permanently
+        if ($slider->image && file_exists(storage_path('app/public/'.$slider->image))) {
+            unlink(storage_path('app/public/'.$slider->image));
+        }
+
+        $slider->forceDelete();
+        return back()->with('success', 'Slider permanently deleted!');
+    }
+    
 }
